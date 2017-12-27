@@ -2,11 +2,181 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TODO App - JavaScript</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:200,300,400" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
   </head>
+
   <body>
 
+    <div class="wrapper">
+
+      <main id="todo" class="todo">
+        <header class="todo-header flex">
+          <section class="todo-header-section">
+            <div id="menu-icon">
+              <div class="menu-bar"></div>
+              <div class="menu-bar bar-short"></div>
+              <div class="menu-bar"></div>
+            </div>
+
+            <h1>Your Things</h1>
+
+            <p id="date">Sep 5, 2018</p>
+          </section>
+
+          <section class="todo-header-section">
+            <div class="todo-header-right-content">
+              <div class="project-counter-display flex">
+                <section class="project-counter-section">
+                  <span id="personal-project-counter"></span>
+                  <p>Personal</p>
+                </section>
+
+                <section class="project-counter-section">
+                  <span id="business-project-counter"></span>
+                  <p>Business</p>
+                </section>
+              </div>
+
+              <div class="progress-graph">
+                <span>65% done</span>
+              </div>
+            </div>
+          </section>
+        </header>
+
+        <section class="todo-content">
+          <p class="heading">INBOX</p>
+
+          <section id="todo-list" class="todo-list">
+            <div class="todo-item flex">
+              <div class="item-section">
+                <i class="fa fa-paint-brush" aria-hidden="true"></i>
+              </div>
+              <div class="item-section">
+                <h2 class="item-text">Boglioli suit fitting</h2>
+                <p class="item-location">Linnegatan 2, Gothenburg</p>
+              </div>
+              <div class="item-section">
+                <span class="item-created">9am</span>
+              </div>
+            </div>
+
+            <div class="todo-item flex">
+              <div class="item-section">
+                <i class="fa fa-bars" aria-hidden="true"></i>
+              </div>
+              <div class="item-section">
+                <h2 class="item-text">Final design delivery</h2>
+                <p class="item-location">Inuse Experience, Gothenburg</p>
+              </div>
+              <div class="item-section">
+                <span class="item-created">11am</span>
+              </div>
+            </div>
+          </section>
+
+          <p class="heading">COMPLETED <span>5</span></p>
+
+          <section class="completed-list">
+            <div class="completed-item flex">
+              <div class="item-section">
+                <i class="fa fa-check" aria-hidden="true"></i>
+              </div>
+
+              <div class="item-section flex">
+                <p>Sketch workshop</p>
+              </div>
+            </div>
+
+            <div class="completed-item flex">
+              <div class="item-section">
+                <i class="fa fa-check" aria-hidden="true"></i>
+              </div>
+
+              <div class="item-section flex">
+                <p>Sketch workshop</p>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <i id="add-todo" class="fa fa-plus" aria-hidden="true"></i>
+      </main>
+
+      <!-- Add todo modal -->
+      <section id="add-modal" class="add-todo-modal">
+        <header class="add-todo-header flex">
+          <i id="back-todo" class="fa fa-long-arrow-left" aria-hidden="true"></i>
+          <p>Add new thing</p>
+          <i class="fa fa-sliders" aria-hidden="true"></i>
+        </header>
+
+        <div class="select-icon">
+          <span class="current-icon"><i class="fa fa-bars"></i></span>
+        </div>
+
+        <form class="add-todo-form">
+          <select id="category-input">
+            <option value="" selected>Select category</option>
+            <option value="personal">Personal</option>
+            <option value="business">Business</option>
+          </select>
+          <input id="todo-input" type="text" name="todo" placeholder="New thing">
+          <input id="place-input" type="text" name="place" placeholder="Place">
+          <input id="time-input" type="text" name="time" placeholder="Time">
+          <input type="text" name="notification" placeholder="Notification">
+          <button id="create-todo-btn">ADD YOUR THING</button>
+        </form>
+      </section>
+
+      <!-- User modal -->
+      <section id="user-modal" class="user-modal">
+        <header class="user-header">
+          <i id="exit" class="fa fa-times" aria-hidden="true"></i>
+          <div class="user-info flex">
+            <div class="profile-image">
+              <img src="images/placeholder.png" alt="Profile picture">
+            </div>
+            <div class="user-info-text">
+              <h2>Stephen</h2>
+              <p>Designer at Facebook</p>
+            </div>
+          </div>
+        </header>
+
+        <section class="user-todo-stats">
+          <div class="stat flex">
+            <p>All things</p>
+            <span>48</span>
+          </div>
+
+          <div class="stat flex">
+            <p>Business</p>
+            <span>23</span>
+          </div>
+
+          <div class="stat flex">
+            <p>Personal</p>
+            <span>25</span>
+          </div>
+        </section>
+
+        <footer class="user-footer flex">
+          <h2>Settings</h2>
+          <i class="fa fa-archive" aria-hidden="true"></i>
+        </footer>
+      </section>
+
+    </div>
+
+    <script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
     <script src="app.js"></script>
   </body>
 </html>

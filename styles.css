@@ -1,5 +1,369 @@
+:root {
+  --mainDarkBlue: #2a3060;
+  --mainBlue: #4758a0;
+  --mainLightBlue: #2db7f5;
+  --grayBlue: #a2a4b1;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-weight: 300;
+}
+
+body {
+  background-color: var(--mainDarkBlue);
+  font-family: 'Montserrat', sans-serif;
+}
+
+.wrapper {
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.flex {
+  display: flex;
+}
+
+.todo {
+  position: relative;
+}
+
+.todo-header {
+  background-image: url('images/mountains.jpg');
+  background-size: cover;
+  color: #fff;
+}
+
+.todo-header #menu-icon {
+  cursor: pointer;
+}
+
+.todo-header #menu-icon:hover .bar-short {
+  width: 23px;
+}
+
+.menu-bar {
+  width: 23px;
+  height: 3px;
+  background-color: #fff;
+  margin: 5px 0;
+}
+
+.menu-bar:first-of-type {
+  margin-top: 0;
+}
+
+.menu-bar.bar-short {
+  width: 17px;
+  transition: width 0.2s ease-in-out;
+}
+
+h1 {
+  font-size: 33px;
+  max-width: 150px;
+  line-height: 40px;
+  margin-top: 15px;
+  margin-bottom: 30px;
+}
+
+.todo-header #date {
+  opacity: 0.6;
+  font-size: 12px;
+}
+
+.todo-header-section {
+  padding: 25px 20px;
+}
+
+.todo-header-section:first-of-type {
+  width: 58%;
+  border-bottom: 4px solid transparent;
+  -moz-border-image: -moz-linear-gradient(left, #7999f0 0%, var(--mainLightBlue) 100%);
+  -webkit-border-image: -webkit-linear-gradient(left, #7999f0 0%, var(--mainLightBlue) 100%);
+  border-image: linear-gradient(to right, #7999f0 0%, var(--mainLightBlue) 100%);
+  border-image-slice: 1;
+}
+
+.todo-header-section:last-of-type {
+  width: 42%;
+  position: relative;
+  text-align: right;
+}
+
+.todo-header-section:last-of-type {
+  background-color: rgba(0, 0, 0, .2);
+  position: relative;
+}
+
+.project-counter-display {
+  justify-content: space-between;
+}
+
+.project-counter-section span {
+  font-size: 22px;
+}
+
+.project-counter-section p {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.todo-header-right-content {
+  width: 100%;
+  position: absolute;
+  bottom: 25px;
+  left: 0;
+  padding: 0 20px;
+}
+
+.progress-graph {
+  margin-top: 30px;
+}
+
+.progress-graph span {
+  opacity: 0.7;
+  font-size: 12px;
+}
+
+.todo-content {
+  background-color: #fff;
+  padding: 25px 20px;
+  color: #5a5a5a;
+}
+
+.heading {
+  font-weight: 400;
+  font-size: 13px !important;
+}
+
+.heading span {
+  background-color: var(--grayBlue);
+  color: #fff;
+  height: 22px;
+  width: 22px;
+  line-height: 23px;
+  display: inline-block;
+  border-radius: 50%;
+  text-align: center;
+  font-weight: 400;
+  font-size: 11px;
+  margin-left: 5px;
+}
+
+.todo-content p {
+  color: #a8a7ac;
+  font-size: 14px;
+}
+
+.todo-item {
+  margin: 40px 0;
+}
+
+.todo-item .item-section:first-of-type {
+  flex: 1;
+  margin: auto;
+  text-align: center;
+}
+
+.todo-item .item-section:nth-of-type(2) {
+  flex: 5;
+}
+
+.todo-item .item-section:last-of-type {
+  flex: 1;
+  text-align: right;
+}
+
+.todo-item .item-section i {
+  font-size: 20px;
+  background: -webkit-linear-gradient(left, #7999f0 0%, var(--mainLightBlue) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.completed-item .item-section i {
+  font-size: 23px;
+  color: #fff;
+  background-color: #526cc0;
+  padding: 10px;
+  border-radius: 50%;
+}
+
+.item-text {
+  font-size: 18px;
+  font-weight: 400;
+  margin-bottom: 2px;
+}
+
+.item-location {
+  font-size: 13px !important;
+}
+
+.item-created {
+  font-size: 13px;
+}
+
+.completed-item {
+  margin: 30px 0;
+}
+
+.completed-item .item-section:last-of-type p {
+  margin: auto;
+  margin-left: 12px;
+}
+
+#add-todo {
+  position: absolute;
+  bottom: 25px; right: 25px;
+  height: 50px;
+  width: 50px;
+  line-height: 50px;
+  text-align: center;
+  background-color: var(--mainLightBlue);
+  color: #fff;
+  font-size: 22px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* Add todo modal */
+.add-todo-modal {
+  display: none;
+  background-color: var(--mainBlue);
+  padding: 25px 20px;
+  color: #fff;
+}
+
+.add-todo-header {
+  justify-content: space-between;
+}
+
+.add-todo-header i {
+  color: #4b89d2;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.select-icon {
+  text-align: center;
+  margin: 20px 0 45px 0;
+}
+
+.select-icon i {
+  font-size: 30px;
+  background: -webkit-linear-gradient(left, #7999f0 0%, var(--mainLightBlue) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  border: 1px solid rgba(255, 255, 255, .6);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.add-todo-form input, .add-todo-form select {
+  display: block;
+  width: 100%;
+  padding: 8px 0;
+  margin: 12px 0;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, .2);
+  background-color: transparent;
+  color: #fff;
+  outline: none;
+  font-size: 14px;
+}
+
+.add-todo-form select {
+  appearance:none;
+  -moz-appearance:none;
+  -webkit-appearance:none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='rgba(255, 255, 255, .2)' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+  background-repeat: no-repeat;
+  background-position-x: 100%;
+  background-position-y: 7px;
+  color: rgba(255, 255, 255, .4);
+  font-family: 'Montserrat', sans-serif;
+}
+
+.add-todo-form button {
+  background-color: #4b89d2;
+  border: none;
+  color: #fff;
+  display: block;
+  width: 100%;
+  padding: 15px 0;
+  margin: 30px 0;
+  font-weight: 400;
+  font-size: 10px;
+  letter-spacing: 2px;
+  border-radius: 2px;
+  -webkit-box-shadow: 0px 15px 30px 0px rgba(0,0,0,0.2);
+  -moz-box-shadow: 0px 15px 30px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px 15px 30px 0px rgba(0,0,0,0.2);
+}
+
+::placeholder {
+  font-family: 'Montserrat', sans-serif;
+  color: rgba(255, 255, 255, .4);
+  font-size: 14px;
+}
+
+/* User modal */
+
+.user-modal {
+  display: none;
+  background-color: var(--mainBlue);
+  padding: 25px 20px;
+  color: #fff;
+}
+
+.user-header i {
+  color: var(--mainLightBlue);
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.user-info {
+  margin: 25px 0 85px 0;
+}
+
+.profile-image {
+  margin-right: 15px;
+}
+
+.user-info-text h2 {
+  font-weight: 200;
+}
+
+.user-info-text p {
+  font-size: 12px;
+  margin-top: 2px;
+  opacity: 0.4;
+}
+
+.profile-image img {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+}
+
+.stat {
+  justify-content: space-between;
+  font-size: 23px;
+  margin: 15px 0;
+}
+
+.stat span {
+  opacity: 0.4;
+}
+
+.user-footer {
+  justify-content: space-between;
+  margin-top: 125px;
 }
