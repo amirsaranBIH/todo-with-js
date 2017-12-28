@@ -31,18 +31,18 @@
             <div class="todo-header-right-content">
               <div class="project-counter-display flex">
                 <section class="project-counter-section">
-                  <span class="personal-counter"></span>
+                  <span class="personal-counter">0</span>
                   <p>Personal</p>
                 </section>
 
                 <section class="project-counter-section">
-                  <span class="business-counter"></span>
+                  <span class="business-counter">0</span>
                   <p>Business</p>
                 </section>
               </div>
 
               <div class="progress-graph">
-                <span>65% done</span>
+                <span id="percent-done">todo empty</span>
               </div>
             </div>
           </section>
@@ -52,7 +52,7 @@
           <p class="heading">INBOX</p>
 
           <section id="todo-list" class="todo-list">
-            <!-- <div class="todo-item flex">
+            <!-- <div class="todo-item flex" title="Add item to completed">
               <div class="item-section">
                 <i class="fa fa-paint-brush" aria-hidden="true"></i>
               </div>
@@ -62,14 +62,17 @@
               </div>
               <div class="item-section">
                 <span class="item-created">9am</span>
+                <div>
+                  <i class="fa fa-times delete-item-btn" aria-hidden="true" title="Delete this item"></i>
+                </div>
               </div>
             </div> -->
           </section>
 
-          <p class="heading">COMPLETED <span>5</span></p>
+          <p class="heading">COMPLETED <span id="completed-counter">0</span></p>
 
-          <section class="completed-list">
-            <div class="completed-item flex">
+          <section id="completed-list" class="completed-list">
+            <!-- <div class="completed-item flex">
               <div class="item-section">
                 <i class="fa fa-check" aria-hidden="true"></i>
               </div>
@@ -77,17 +80,7 @@
               <div class="item-section flex">
                 <p>Sketch workshop</p>
               </div>
-            </div>
-
-            <div class="completed-item flex">
-              <div class="item-section">
-                <i class="fa fa-check" aria-hidden="true"></i>
-              </div>
-
-              <div class="item-section flex">
-                <p>Sketch workshop</p>
-              </div>
-            </div>
+            </div> -->
           </section>
         </section>
 
@@ -114,8 +107,6 @@
           </select>
           <input id="todo-input" type="text" name="todo" placeholder="New thing">
           <input id="place-input" type="text" name="place" placeholder="Place">
-          <input id="time-input" type="text" name="time" placeholder="Time">
-          <input type="text" name="notification" placeholder="Notification">
           <button id="create-todo-btn">ADD YOUR THING</button>
         </form>
       </section>

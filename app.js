@@ -1,28 +1,51 @@
-const fontAwesomeIcons = 'https://gist.githubusercontent.com/james2doyle/3d7ad018e6b6abed7957/raw/96dc7abc78826618e6ad291f4f042fc5afc50980/fa-icons.json';
-
 // Data Contoller
 var dataContoller = (function() {
 
-  // Items of the todo list
-  var items = {
-    personal: [],
-    business: []
-  };
+const fontAwesomeIcons = 'https://gist.githubusercontent.com/james2doyle/3d7ad018e6b6abed7957/raw/96dc7abc78826618e6ad291f4f042fc5afc50980/fa-icons.json';
+
+var icons;
+fetch(fontAwesomeIcons)
+  .then(blob => blob.json())
+  .then(data => icons = data);
 
 
-  return {
-    // Puches item to 'items'
-    createItem(todo, category, place, time, icon) {
-      items[category].push({todo, place, time, icon});
-    },
-    // Returns the 'items' object
-    getItems() {
-      return items;
-    }
+// Item constructor function
+function Item(todo, category, place, icon) {
+  this.todo = todo;
+  this.category = category;
+  this.place = place;
+  this.time = getFormatedTime();
+  this.icon = icon;
+}
 
+const items = [];
+
+function getFormatedTime() {
+  var formatedHours;
+
+  var time = new Date();
+  var hours = time.getHours();
+
+  if (hours <= 12) {
+    formatedHours = `${hours}am`;
+  } else {
+    formatedHours = `${hours}pm`;
   }
+  return formatedHours;
+}
+
+return {
+  createItem(data) {
+    var newItem = new Item(data.todo, data.category, data.place, data.icon);
+    items.push(newItem);
+  },
+  getItems() {
+    return items;
+  }
+}
 
 }());
+
 
 // UI Contoller
 var UIContoller = (function() {
@@ -30,7 +53,7 @@ var UIContoller = (function() {
   // All DOM elements
   const DOM = {
     todo: '#todo',
-    barsIcon: '#menu-icon',
+    menuIcon: '#menu-icon',
     addModal: '#add-modal',
     goBack: '#back-todo',
     addTODO: '#add-todo',
@@ -41,7 +64,6 @@ var UIContoller = (function() {
     input: {
       todo: '#todo-input',
       category: '#category-input',
-      time: '#time-input',
       place: '#place-input'
     },
     counter: {
@@ -52,101 +74,125 @@ var UIContoller = (function() {
   }
 
   return {
-    // Easier selector function
-    select(el) {
+    // Selector function
+    select(el, option) {
       var validEl = typeof el === 'string';
+
       if (validEl) {
-        return el.startsWith('.') ? document.querySelectorAll(el) : document.querySelector(el);
+        return option === 'all' ? document.querySelectorAll(el) : document.querySelector(el);
       }
-      console.error('Function select() doesn\'t have a valid argument');
     },
-    // Returns the DOM elements
+    // Adding event listener
+    addEvent(el, fn, ev) {
+      ev = ev || 'click';
+      el.addEventListener(ev, fn);
+    },
+    // All DOM elements
     getDOM() {
       return DOM;
     },
-    // Fades in and out given elements
+    // Transition between modals
     fadeInOut(fadeIn, fadeOut) {
-      $(fadeOut).fadeOut(100, function() {
+      $(fadeOut).fadeOut(200, function() {
         $(fadeIn).fadeIn();
       });
     },
-    // Formats todo item template with given inputs
-    formatTemplate(todo, place, time, icon) {
-      var todoTemplate = `<div class="todo-item flex"><div class="item-section"><i class="fa ${icon}" aria-hidden="true"></i></div><div class="item-section"><h2 class="item-text">${todo}</h2><p class="item-location">${place}</p></div><div class="item-section"><span class="item-created">${time}</span></div></div>`;
+    // Render all items to list
+    renderItems(items, location) {
+      location.innerHTML = '';
+      items.forEach(item => {
+        var todoTemplate = `<div class="todo-item flex" title="Add item to completed"><div class="item-section"><i class="fa ${item.icon}" aria-hidden="true"></i></div><div class="item-section"><h2 class="item-text">${item.todo}</h2><p class="item-location">${item.place}</p></div><div class="item-section"><span class="item-created">${item.time}</span><div><i class="fa fa-times delete-item-btn" aria-hidden="true" title="Delete this item"></i></div></div></div>`;
 
-      return todoTemplate;
+        location.insertAdjacentHTML('beforeend', todoTemplate);
+      });
     },
-    // Renders the item on the page
-    renderItem(item, list) {
-      list.insertAdjacentHTML('beforeend', item);
-    },
-    // Updates the item counters
+    // Update counters
     updateCounter(data, personal, business, all) {
-      personal.forEach(per => {
-        per.innerText = data.personal.length;
+      var personalCounter = 0;
+      var businessCounter = 0;
+      data.forEach(item => {
+        if (item.category === 'personal') {
+          personalCounter++;
+        } else {
+          businessCounter++;
+        }
       });
-      business.forEach(bus => {
-        bus.innerText = data.business.length;
-      });
-      all.innerText = data.personal.length + data.business.length;
-    }
 
+      personal.forEach(item => {
+        item.innerText = personalCounter;
+      });
+      business.forEach(item => {
+        item.innerText = businessCounter;
+      });
+      all.innerText = personalCounter + businessCounter;
+    }
   }
 
 }());
 
+
 // Controller
 var contoller = (function(dataCtrl, UICtrl) {
 
-  var select = UICtrl.select;
-  var DOM = UICtrl.getDOM();
+var select = UICtrl.select;
+var DOM = UICtrl.getDOM();
+var addEvent = UICtrl.addEvent;
+var fadeInOut = UICtrl.fadeInOut;
 
-  // Sets up events
-  function setUpEvents() {
-    select(DOM.barsIcon).addEventListener('click', function() {
-      UICtrl.fadeInOut(DOM.userModal, DOM.todo);
-    });
+function setUpEvents() {
+  // Fade in user modal, fade out main todo
+  addEvent(select(DOM.menuIcon), function() {
+    fadeInOut(select(DOM.userModal), select(DOM.todo));
+  });
 
-    select(DOM.goBack).addEventListener('click', function() {
-      UICtrl.fadeInOut(DOM.todo, DOM.addModal);
-    });
+  // Fade in main todo, fade out user modal
+  addEvent(select(DOM.exitBtn), function() {
+    fadeInOut(select(DOM.todo), select(DOM.userModal));
+  });
 
-    select(DOM.addTODO).addEventListener('click', function() {
-      UICtrl.fadeInOut(DOM.addModal, DOM.todo);
-    });
+  // Fade in add modal, fade out main todo
+  addEvent(select(DOM.addTODO), function() {
+    fadeInOut(select(DOM.addModal), select(DOM.todo));
+  });
 
-    select(DOM.exitBtn).addEventListener('click', function() {
-      UICtrl.fadeInOut(DOM.todo, DOM.userModal);
-    });
+  // Fade in main todo, fade out add modal
+  addEvent(select(DOM.goBack), function() {
+    fadeInOut(select(DOM.todo), select(DOM.addModal));
+  });
 
-    select(DOM.createBtn).addEventListener('click', function(e) {
-      e.preventDefault();
+  // Form button to make a new item
+  addEvent(select(DOM.createBtn), function(e) {
+    e.preventDefault();
+    var newItem = {
+      todo: select(DOM.input.todo).value,
+      category: select(DOM.input.category).value,
+      place: select(DOM.input.place).value,
+      icon: 'fa-paint-brush'
+    };
+    dataCtrl.createItem(newItem);
+    UICtrl.renderItems(dataCtrl.getItems(), select(DOM.todoList));
+    UICtrl.updateCounter(dataCtrl.getItems(), select(DOM.counter.personal, 'all'), select(DOM.counter.business, 'all'), select(DOM.counter.all));
+    fadeInOut(select(DOM.todo), select(DOM.addModal));
+  });
 
-      var todoInput = select(DOM.input.todo).value;
-      var categoryInput = select(DOM.input.category).value;
-      var placeInput = select(DOM.input.place).value;
-      var timeInput = select(DOM.input.time).value;
-      var formatedTemplate = UICtrl.formatTemplate(todoInput, placeInput, timeInput, 'fa-paint-brush');
+  // Add item to completed
+  $(select(DOM.todoList)).on('click', '.todo-item', function() {
+    var selectedItem = this;
+  });
 
-      dataCtrl.createItem(todoInput, categoryInput, placeInput, timeInput, 'fa-paint-brush', formatedTemplate);
+  // Delete item
+  $(select(DOM.todoList)).on('click', '.delete-item-btn', function() {
+    var selectedItem = this.parentElement.parentElement.parentElement;
+  });
+}
 
-      UICtrl.renderItem(UICtrl.formatTemplate(todoInput, placeInput, timeInput, 'fa-paint-brush'), select(DOM.todoList));
-      UICtrl.fadeInOut(DOM.todo, DOM.addModal);
-
-      console.log(dataCtrl.getItems());
-      UICtrl.updateCounter(dataCtrl.getItems(), select(DOM.counter.personal), select(DOM.counter.business), select(DOM.counter.all));
-    });
+return {
+  init() {
+    setUpEvents();
   }
-
-  return {
-    // Initializes the app
-    init() {
-      setUpEvents();
-      UICtrl.updateCounter(dataCtrl.getItems(), select(DOM.counter.personal), select(DOM.counter.business), select(DOM.counter.all));
-    }
-  }
+}
 
 }(dataContoller, UIContoller));
 
-// Starts the app
+// Initializes the app
 contoller.init();
