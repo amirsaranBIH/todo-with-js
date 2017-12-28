@@ -19,8 +19,12 @@ body {
 
 .wrapper {
   max-width: 400px;
-  margin-left: auto;
-  margin-right: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  position: absolute;
+  max-width: 400px;
+  width: 100%;
+  height: 100vh;
 }
 
 .flex {
@@ -28,7 +32,8 @@ body {
 }
 
 .todo {
-  position: relative;
+  height: 100%;
+  background-color: #fff;
 }
 
 .todo-header {
@@ -235,6 +240,7 @@ h1 {
   background-color: var(--mainBlue);
   padding: 25px 20px;
   color: #fff;
+  height: 100%;
 }
 
 .add-todo-header {
@@ -321,6 +327,7 @@ h1 {
   background-color: var(--mainBlue);
   padding: 25px 20px;
   color: #fff;
+  height: 100%;
 }
 
 .user-header i {
