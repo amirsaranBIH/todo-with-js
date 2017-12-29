@@ -82,6 +82,11 @@ return {
   // Remove item from items list
   removeItem(index, array) {
     array.splice(index, 1);
+  },
+  getDate() {
+    var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+    var date = new Date();
+    return `${date.getDate()} ${months[date.getMonth()]}, ${date.getFullYear()}`
   }
 }
 
@@ -114,7 +119,8 @@ var UIContoller = (function() {
       completed: '#completed-counter'
     },
     completedList: '#completed-list',
-    percentDone: '#percent-done'
+    percentDone: '#percent-done',
+    date: '#date'
   }
 
   return {
@@ -144,16 +150,21 @@ var UIContoller = (function() {
     // Render all items to list
     renderItems(items, location, option) {
       var todoTemplate;
+      var emptyTemplate = '<p class="empty-list">There is no things to do</p>';
       location.innerHTML = '';
       items.forEach(item => {
         if (option === 'todo') {
           todoTemplate = `<div class="todo-item flex" title="Add item to completed"><div class="item-section"><i class="fa ${item.icon}" aria-hidden="true"></i></div><div class="item-section"><h2 class="item-text">${item.todo}</h2><p class="item-location">${item.place}</p></div><div class="item-section"><span class="item-created">${item.time}</span><div><i class="fa fa-times delete-item-btn" aria-hidden="true" title="Delete this item"></i></div></div></div>`;
+          emptyTemplate = '<p class="empty-list">There is no things to do</p>';
         } else if (option === 'completed') {
           todoTemplate = `<div class="completed-item flex"><div class="item-section"><i class="fa fa-check" aria-hidden="true"></i></div><div class="item-section flex"><p>${item.todo}</p></div></div>`;
         }
-
-        location.insertAdjacentHTML('beforeend', todoTemplate);
       });
+      if (items.length) {
+        location.insertAdjacentHTML('beforeend', todoTemplate);
+      } else {
+        location.insertAdjacentHTML('beforeend', emptyTemplate);
+      }
     },
     // Update counters
     updateCounter(data, personal, business, all) {
@@ -165,13 +176,9 @@ var UIContoller = (function() {
       });
       all.innerText = data.all;
     },
-    // Update completed counter
-    updateCompletedCounter(data, completed) {
-      completed.innerText = data;
-    },
-    // Update percent done
-    updatePercent(el, percent) {
-      el.innerText = percent;
+    // Update element
+    updateEl(data, el) {
+      el.innerText = data;
     }
   }
 
@@ -220,7 +227,11 @@ function setUpEvents() {
     UICtrl.renderItems(dataCtrl.getItems(), select(DOM.todoList), 'todo');
     UICtrl.updateCounter(dataCtrl.splitCategories(dataCtrl.getItems()), select(DOM.counter.personal, 'all'), select(DOM.counter.business, 'all'), select(DOM.counter.all));
     fadeInOut(select(DOM.todo), select(DOM.addModal));
-    UICtrl.updatePercent(select(DOM.percentDone), dataCtrl.calculatePercentDone());
+    UICtrl.updateEl(select(DOM.percentDone), dataCtrl.calculatePercentDone());
+
+    for (let input in DOM.input) {
+      select(DOM.input[input]).value = '';
+    }
   });
 
   // Add item to completed
@@ -231,8 +242,8 @@ function setUpEvents() {
     dataCtrl.removeItem(index, dataCtrl.getItems());
     UICtrl.renderItems(dataCtrl.getItems(), select(DOM.todoList), 'todo');
     UICtrl.updateCounter(dataCtrl.splitCategories(dataCtrl.getItems()), select(DOM.counter.personal, 'all'), select(DOM.counter.business, 'all'), select(DOM.counter.all));
-    UICtrl.updateCompletedCounter(dataCtrl.getCompletedItems().length, select(DOM.counter.completed));
-    UICtrl.updatePercent(select(DOM.percentDone), dataCtrl.calculatePercentDone());
+    UICtrl.updateEl(dataCtrl.getCompletedItems().length, select(DOM.counter.completed));
+    UICtrl.updateEl(dataCtrl.calculatePercentDone(), select(DOM.percentDone));
   });
 
   // Delete item
@@ -244,21 +255,22 @@ function setUpEvents() {
     // Stops the todo-item event from invoking
     e.stopPropagation();
     UICtrl.updateCounter(dataCtrl.splitCategories(dataCtrl.getItems()), select(DOM.counter.personal, 'all'), select(DOM.counter.business, 'all'), select(DOM.counter.all));
-    UICtrl.updatePercent(select(DOM.percentDone), dataCtrl.calculatePercentDone());
+    UICtrl.updateEl(select(DOM.percentDone), dataCtrl.calculatePercentDone());
   });
 
   $(select(DOM.completedList)).on('click', '.completed-item', function() {
     var index = Array.prototype.indexOf.call(this.parentNode.childNodes, this);
     dataCtrl.removeItem(index, dataCtrl.getCompletedItems());
     UICtrl.renderItems(dataCtrl.getCompletedItems(), select(DOM.completedList), 'completed');
-    UICtrl.updatePercent(select(DOM.percentDone), dataCtrl.calculatePercentDone());
-    UICtrl.updateCompletedCounter(dataCtrl.getCompletedItems().length, select(DOM.counter.completed));
+    UICtrl.updateEl(dataCtrl.calculatePercentDone(), select(DOM.percentDone));
+    UICtrl.updateEl(dataCtrl.getCompletedItems().length, select(DOM.counter.completed));
   });
 }
 
 return {
   init() {
     setUpEvents();
+    UICtrl.updateEl(dataCtrl.getDate(), select(DOM.date));
   }
 }
 

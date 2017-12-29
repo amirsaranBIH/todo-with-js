@@ -384,3 +384,8 @@ h1 {
   justify-content: space-between;
   margin-top: 125px;
 }
+
+.empty-list {
+  margin: 20px 0;
+  text-align: center;
+}

@@ -24,7 +24,7 @@
 
             <h1>Your Things</h1>
 
-            <p id="date">Sep 5, 2018</p>
+            <p id="date"></p>
           </section>
 
           <section class="todo-header-section">
@@ -52,6 +52,7 @@
           <p class="heading">INBOX</p>
 
           <section id="todo-list" class="todo-list">
+            <p class="empty-list">There is no things to do</p>
             <!-- <div class="todo-item flex" title="Add item to completed">
               <div class="item-section">
                 <i class="fa fa-paint-brush" aria-hidden="true"></i>
@@ -99,7 +100,7 @@
           <span class="current-icon"><i class="fa fa-bars"></i></span>
         </div>
 
-        <form class="add-todo-form">
+        <form class="add-todo-form" autocomplete="off">
           <select id="category-input">
             <option value="" selected>Select category</option>
             <option value="personal">Personal</option>
