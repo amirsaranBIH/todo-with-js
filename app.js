@@ -68,9 +68,10 @@ return {
   },
   // Calculating the percent of done todos
   calculatePercentDone() {
-    var percent = ((completed.length / (completed.length + items.length)) * 100);
+    if(!completed.length && !items.length) return 'todo empty';
+    var percent = (completed.length / (completed.length + items.length)) * 100;
     if (String(percent).includes('.')) {
-      percent = percent.toFixed(2);
+      percent = percent.toFixed(0);
     }
     return `${percent}% done`;
   },
@@ -79,8 +80,8 @@ return {
     completed.push(items[index]);
   },
   // Remove item from items list
-  removeItem(index) {
-    items.splice(index, 1);
+  removeItem(index, array) {
+    array.splice(index, 1);
   }
 }
 
@@ -227,7 +228,7 @@ function setUpEvents() {
     var index = Array.prototype.indexOf.call(this.parentNode.childNodes, this);
     dataCtrl.addToCompleted(index);
     UICtrl.renderItems(dataCtrl.getCompletedItems(), select(DOM.completedList), 'completed');
-    dataCtrl.removeItem(index);
+    dataCtrl.removeItem(index, dataCtrl.getItems());
     UICtrl.renderItems(dataCtrl.getItems(), select(DOM.todoList), 'todo');
     UICtrl.updateCounter(dataCtrl.splitCategories(dataCtrl.getItems()), select(DOM.counter.personal, 'all'), select(DOM.counter.business, 'all'), select(DOM.counter.all));
     UICtrl.updateCompletedCounter(dataCtrl.getCompletedItems().length, select(DOM.counter.completed));
@@ -238,12 +239,20 @@ function setUpEvents() {
   $(select(DOM.todoList)).on('click', '.delete-item-btn', function(e) {
     var selectedItem = this.parentElement.parentElement.parentElement;
     var index = Array.prototype.indexOf.call(selectedItem.parentNode.childNodes, selectedItem);
-    dataCtrl.removeItem(index);
+    dataCtrl.removeItem(index, dataCtrl.getItems());
     UICtrl.renderItems(dataCtrl.getItems(), select(DOM.todoList), 'todo');
     // Stops the todo-item event from invoking
     e.stopPropagation();
     UICtrl.updateCounter(dataCtrl.splitCategories(dataCtrl.getItems()), select(DOM.counter.personal, 'all'), select(DOM.counter.business, 'all'), select(DOM.counter.all));
     UICtrl.updatePercent(select(DOM.percentDone), dataCtrl.calculatePercentDone());
+  });
+
+  $(select(DOM.completedList)).on('click', '.completed-item', function() {
+    var index = Array.prototype.indexOf.call(this.parentNode.childNodes, this);
+    dataCtrl.removeItem(index, dataCtrl.getCompletedItems());
+    UICtrl.renderItems(dataCtrl.getCompletedItems(), select(DOM.completedList), 'completed');
+    UICtrl.updatePercent(select(DOM.percentDone), dataCtrl.calculatePercentDone());
+    UICtrl.updateCompletedCounter(dataCtrl.getCompletedItems().length, select(DOM.counter.completed));
   });
 }
 
