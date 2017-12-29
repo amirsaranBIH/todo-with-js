@@ -19,6 +19,7 @@ function Item(todo, category, place, icon) {
 }
 
 const items = [];
+const completed = [];
 
 function getFormatedTime() {
   var formatedHours;
@@ -35,12 +36,51 @@ function getFormatedTime() {
 }
 
 return {
+  // Creates an item and adds to items array
   createItem(data) {
     var newItem = new Item(data.todo, data.category, data.place, data.icon);
     items.push(newItem);
   },
+  // Get items array
   getItems() {
     return items;
+  },
+  // Get completed array
+  getCompletedItems() {
+    return completed;
+  },
+  // Split personal and
+  splitCategories(data) {
+    var personalCounter = [];
+    var businessCounter = [];
+    data.forEach(item => {
+      if (item.category === 'personal') {
+        personalCounter.push(item);
+      } else {
+        businessCounter.push(item);
+      }
+    });
+    return {
+      personalCounter: personalCounter.length,
+      businessCounter: businessCounter.length,
+      all: personalCounter.length + businessCounter.length
+    }
+  },
+  // Calculating the percent of done todos
+  calculatePercentDone() {
+    var percent = ((completed.length / (completed.length + items.length)) * 100);
+    if (String(percent).includes('.')) {
+      percent = percent.toFixed(2);
+    }
+    return `${percent}% done`;
+  },
+  // Add to completed
+  addToCompleted(index) {
+    completed.push(items[index]);
+  },
+  // Remove item from items list
+  removeItem(index) {
+    items.splice(index, 1);
   }
 }
 
@@ -69,8 +109,11 @@ var UIContoller = (function() {
     counter: {
       personal: '.personal-counter',
       business: '.business-counter',
-      all: '#counter-all'
-    }
+      all: '#counter-all',
+      completed: '#completed-counter'
+    },
+    completedList: '#completed-list',
+    percentDone: '#percent-done'
   }
 
   return {
@@ -98,33 +141,36 @@ var UIContoller = (function() {
       });
     },
     // Render all items to list
-    renderItems(items, location) {
+    renderItems(items, location, option) {
+      var todoTemplate;
       location.innerHTML = '';
       items.forEach(item => {
-        var todoTemplate = `<div class="todo-item flex" title="Add item to completed"><div class="item-section"><i class="fa ${item.icon}" aria-hidden="true"></i></div><div class="item-section"><h2 class="item-text">${item.todo}</h2><p class="item-location">${item.place}</p></div><div class="item-section"><span class="item-created">${item.time}</span><div><i class="fa fa-times delete-item-btn" aria-hidden="true" title="Delete this item"></i></div></div></div>`;
+        if (option === 'todo') {
+          todoTemplate = `<div class="todo-item flex" title="Add item to completed"><div class="item-section"><i class="fa ${item.icon}" aria-hidden="true"></i></div><div class="item-section"><h2 class="item-text">${item.todo}</h2><p class="item-location">${item.place}</p></div><div class="item-section"><span class="item-created">${item.time}</span><div><i class="fa fa-times delete-item-btn" aria-hidden="true" title="Delete this item"></i></div></div></div>`;
+        } else if (option === 'completed') {
+          todoTemplate = `<div class="completed-item flex"><div class="item-section"><i class="fa fa-check" aria-hidden="true"></i></div><div class="item-section flex"><p>${item.todo}</p></div></div>`;
+        }
 
         location.insertAdjacentHTML('beforeend', todoTemplate);
       });
     },
     // Update counters
     updateCounter(data, personal, business, all) {
-      var personalCounter = 0;
-      var businessCounter = 0;
-      data.forEach(item => {
-        if (item.category === 'personal') {
-          personalCounter++;
-        } else {
-          businessCounter++;
-        }
-      });
-
       personal.forEach(item => {
-        item.innerText = personalCounter;
+        item.innerText = data.personalCounter;
       });
       business.forEach(item => {
-        item.innerText = businessCounter;
+        item.innerText = data.businessCounter;
       });
-      all.innerText = personalCounter + businessCounter;
+      all.innerText = data.all;
+    },
+    // Update completed counter
+    updateCompletedCounter(data, completed) {
+      completed.innerText = data;
+    },
+    // Update percent done
+    updatePercent(el, percent) {
+      el.innerText = percent;
     }
   }
 
@@ -170,19 +216,34 @@ function setUpEvents() {
       icon: 'fa-paint-brush'
     };
     dataCtrl.createItem(newItem);
-    UICtrl.renderItems(dataCtrl.getItems(), select(DOM.todoList));
-    UICtrl.updateCounter(dataCtrl.getItems(), select(DOM.counter.personal, 'all'), select(DOM.counter.business, 'all'), select(DOM.counter.all));
+    UICtrl.renderItems(dataCtrl.getItems(), select(DOM.todoList), 'todo');
+    UICtrl.updateCounter(dataCtrl.splitCategories(dataCtrl.getItems()), select(DOM.counter.personal, 'all'), select(DOM.counter.business, 'all'), select(DOM.counter.all));
     fadeInOut(select(DOM.todo), select(DOM.addModal));
+    UICtrl.updatePercent(select(DOM.percentDone), dataCtrl.calculatePercentDone());
   });
 
   // Add item to completed
   $(select(DOM.todoList)).on('click', '.todo-item', function() {
-    var selectedItem = this;
+    var index = Array.prototype.indexOf.call(this.parentNode.childNodes, this);
+    dataCtrl.addToCompleted(index);
+    UICtrl.renderItems(dataCtrl.getCompletedItems(), select(DOM.completedList), 'completed');
+    dataCtrl.removeItem(index);
+    UICtrl.renderItems(dataCtrl.getItems(), select(DOM.todoList), 'todo');
+    UICtrl.updateCounter(dataCtrl.splitCategories(dataCtrl.getItems()), select(DOM.counter.personal, 'all'), select(DOM.counter.business, 'all'), select(DOM.counter.all));
+    UICtrl.updateCompletedCounter(dataCtrl.getCompletedItems().length, select(DOM.counter.completed));
+    UICtrl.updatePercent(select(DOM.percentDone), dataCtrl.calculatePercentDone());
   });
 
   // Delete item
-  $(select(DOM.todoList)).on('click', '.delete-item-btn', function() {
+  $(select(DOM.todoList)).on('click', '.delete-item-btn', function(e) {
     var selectedItem = this.parentElement.parentElement.parentElement;
+    var index = Array.prototype.indexOf.call(selectedItem.parentNode.childNodes, selectedItem);
+    dataCtrl.removeItem(index);
+    UICtrl.renderItems(dataCtrl.getItems(), select(DOM.todoList), 'todo');
+    // Stops the todo-item event from invoking
+    e.stopPropagation();
+    UICtrl.updateCounter(dataCtrl.splitCategories(dataCtrl.getItems()), select(DOM.counter.personal, 'all'), select(DOM.counter.business, 'all'), select(DOM.counter.all));
+    UICtrl.updatePercent(select(DOM.percentDone), dataCtrl.calculatePercentDone());
   });
 }
 
