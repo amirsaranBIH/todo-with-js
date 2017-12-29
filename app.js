@@ -38,6 +38,7 @@ function getFormatedTime() {
 return {
   // Creates an item and adds to items array
   createItem(data) {
+    data.category = data.category || 'personal';
     var newItem = new Item(data.todo, data.category, data.place, data.icon);
     items.push(newItem);
   },
@@ -155,14 +156,14 @@ var UIContoller = (function() {
       items.forEach(item => {
         if (option === 'todo') {
           todoTemplate = `<div class="todo-item flex" title="Add item to completed"><div class="item-section"><i class="fa ${item.icon}" aria-hidden="true"></i></div><div class="item-section"><h2 class="item-text">${item.todo}</h2><p class="item-location">${item.place}</p></div><div class="item-section"><span class="item-created">${item.time}</span><div><i class="fa fa-times delete-item-btn" aria-hidden="true" title="Delete this item"></i></div></div></div>`;
-          emptyTemplate = '<p class="empty-list">There is no things to do</p>';
         } else if (option === 'completed') {
           todoTemplate = `<div class="completed-item flex"><div class="item-section"><i class="fa fa-check" aria-hidden="true"></i></div><div class="item-section flex"><p>${item.todo}</p></div></div>`;
         }
+        if (items.length) {
+          location.insertAdjacentHTML('beforeend', todoTemplate);
+        }
       });
-      if (items.length) {
-        location.insertAdjacentHTML('beforeend', todoTemplate);
-      } else {
+      if (!items.length && option === 'todo') {
         location.insertAdjacentHTML('beforeend', emptyTemplate);
       }
     },
@@ -225,9 +226,9 @@ function setUpEvents() {
     };
     dataCtrl.createItem(newItem);
     UICtrl.renderItems(dataCtrl.getItems(), select(DOM.todoList), 'todo');
-    UICtrl.updateCounter(dataCtrl.splitCategories(dataCtrl.getItems()), select(DOM.counter.personal, 'all'), select(DOM.counter.business, 'all'), select(DOM.counter.all));
     fadeInOut(select(DOM.todo), select(DOM.addModal));
-    UICtrl.updateEl(select(DOM.percentDone), dataCtrl.calculatePercentDone());
+    UICtrl.updateCounter(dataCtrl.splitCategories(dataCtrl.getItems()), select(DOM.counter.personal, 'all'), select(DOM.counter.business, 'all'), select(DOM.counter.all));
+    UICtrl.updateEl(dataCtrl.calculatePercentDone(), select(DOM.percentDone));
 
     for (let input in DOM.input) {
       select(DOM.input[input]).value = '';
@@ -246,7 +247,7 @@ function setUpEvents() {
     UICtrl.updateEl(dataCtrl.calculatePercentDone(), select(DOM.percentDone));
   });
 
-  // Delete item
+  // Delete todo item
   $(select(DOM.todoList)).on('click', '.delete-item-btn', function(e) {
     var selectedItem = this.parentElement.parentElement.parentElement;
     var index = Array.prototype.indexOf.call(selectedItem.parentNode.childNodes, selectedItem);
@@ -258,6 +259,7 @@ function setUpEvents() {
     UICtrl.updateEl(select(DOM.percentDone), dataCtrl.calculatePercentDone());
   });
 
+  // Delete completed item
   $(select(DOM.completedList)).on('click', '.completed-item', function() {
     var index = Array.prototype.indexOf.call(this.parentNode.childNodes, this);
     dataCtrl.removeItem(index, dataCtrl.getCompletedItems());
